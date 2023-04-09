@@ -34,7 +34,7 @@ class Content extends User_Controller
 		$config["uri_segment"] = 3;
 		$config["base_url"] = base_url("content/" . $id);
 		$config['reuse_query_string'] = TRUE;
-		$config["total_rows"] = count($this->contents_model->getItems($id, 0, $q, 1, $language_id));
+		$config["total_rows"] = count($this->contents_model->getItems($id, 0, $q, 1));
 		$config['query_string_segment'] = 'page';
 		$config['full_tag_open'] = '<ul class="page-nav list-style">';
 		$config['full_tag_close'] = '</ul>';
@@ -63,8 +63,8 @@ class Content extends User_Controller
 
 		$page = ($this->uri->segment($config["uri_segment"])) ? $this->uri->segment($config["uri_segment"]) : 0;
 
-		$data->items = $this->contents_model->getPagedItems($config["per_page"], $page, $id, 0, $q, 1, $language_id);
-		$data->featuredItems = $this->contents_model->getPagedItems(5, 0, $id, 0, "", 1, $language_id);
+		$data->items = $this->contents_model->getPagedItems($config["per_page"], $page, $id, 0, $q, 1);
+		$data->featuredItems = $this->contents_model->getPagedItems(5, 0, $id, 0, "", 1);
 
 		$data->links = $this->pagination->create_links();
 
@@ -80,7 +80,7 @@ class Content extends User_Controller
 		$data = new stdClass();
 
 		$item = $this->contents_model->getItemById($id);
-		$data->latestItems = $this->contents_model->getPagedItems(4, 0, $item->category_id, 0, "", 1, $language_id);
+		$data->latestItems = $this->contents_model->getPagedItems(4, 0, $item->category_id, 0, "", 1);
 
 		$data->page_id = $item->id;
 		$data->page_title = $item->title;
@@ -89,9 +89,7 @@ class Content extends User_Controller
 		$data->category_id = $item->category_id;
 		$data->page_description = $item->description;
 		$data->page_content = $item->content;
-		$data->page_date = $item->published_at;
 
-		$data->page_img = $this->getImageNull($item->file_id);
 		$data->page_url = base_url('/content/detail/' . $item->id);
 
 		$data->view = "content-detail";

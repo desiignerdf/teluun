@@ -17,6 +17,12 @@
 	<link href="<?= base_url("assets/admin/") ?>css/style.css" rel="stylesheet">
 	<link href="<?= base_url("assets/admin/") ?>vendor/owl-carousel/owl.carousel.css" rel="stylesheet">
 
+	<link href="<?= base_url('summernote/summernote.min.css?v=' . time()) ?>" rel="stylesheet">
+	<link href="<?= base_url('assets/admin/css/summernote-ext-ajaximageupload.css?v=' . time()) ?>" rel="stylesheet">
+	<script type="text/javascript" src="<?= base_url('summernote/summernote.min.js?v=' . time()) ?>"></script>
+	<script type="text/javascript" src="<?= base_url('assets/admin/js/summernote-ext-ajaximageupload.js?v=' . time()) ?>"></script>
+
+	<script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
 </head>
 <div class="content-wrapper">
 
@@ -92,13 +98,7 @@
 					</nav>
 				</div>
 			</div>
-			<!--**********************************
-            Header end ti-comment-alt
-        ***********************************-->
 
-			<!--**********************************
-            Sidebar start
-        ***********************************-->
 			<div class="deznav">
 				<div class="deznav-scroll">
 					<ul class="metismenu" id="menu">
@@ -115,48 +115,41 @@
 								echo 'class="mm-active"';
 							} ?>><a href="<?= base_url('admin/dashboard') ?>" class="ai-icon" aria-expanded="false">
 								<i class="flaticon-381-networking"></i>
-								<span class="nav-text">Dashboard</span>
+								<span class="nav-text">Хянах самбар</span>
+							</a>
+						</li>
+
+						<li <?php if ($this->uri->segment(2) == 'competition_category') {
+								echo 'class="mm-active"';
+							} ?>><a href="<?= base_url('admin/competition_category') ?>" class="ai-icon" aria-expanded="false">
+								<i class="flaticon-381-notepad"></i>
+								<span class="nav-text">Тэмцээн</span>
+							</a>
+						</li>
+
+						<li <?php if ($this->uri->segment(2) == 'competition') {
+								echo 'class="mm-active"';
+							} ?>><a href="<?= base_url('admin/competition') ?>" class="ai-icon" aria-expanded="false">
+								<i class="flaticon-381-notepad"></i>
+								<span class="nav-text">Тэмцээний оноолт</span>
+							</a>
+						</li>
+
+						<li <?php if ($this->uri->segment(2) == 'content') {
+								echo 'class="mm-active"';
+							} ?>><a href="<?= base_url('admin/content') ?>" class="ai-icon" aria-expanded="false">
+								<i class="flaticon-381-network"></i>
+								<span class="nav-text">Мэдээ</span>
 							</a>
 						</li>
 
 						<li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
-								<i class="flaticon-381-notepad"></i>
-								<span class="nav-text">Forms</span>
-							</a>
-							<ul aria-expanded="false">
-								<li><a href="form-element.html">Form Elements</a></li>
-								<li><a href="form-wizard.html">Wizard</a></li>
-								<li><a href="form-editor-summernote.html">Summernote</a></li>
-								<li><a href="form-pickers.html">Pickers</a></li>
-								<li><a href="form-validation-jquery.html">Jquery Validate</a></li>
-							</ul>
-						</li>
-						<li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
-								<i class="flaticon-381-network"></i>
-								<span class="nav-text">Table</span>
-							</a>
-							<ul aria-expanded="false">
-								<li><a href="table-bootstrap-basic.html">Bootstrap</a></li>
-								<li><a href="table-datatable-basic.html">Datatable</a></li>
-							</ul>
-						</li>
-						<li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
 								<i class="flaticon-381-layer-1"></i>
-								<span class="nav-text">Pages</span>
+								<span class="nav-text">Лавлах</span>
 							</a>
 							<ul aria-expanded="false">
-								<li><a href="page-register.html">Register</a></li>
-								<li><a href="page-login.html">Login</a></li>
-								<li><a class="has-arrow" href="javascript:void()" aria-expanded="false">Error</a>
-									<ul aria-expanded="false">
-										<li><a href="page-error-400.html">Error 400</a></li>
-										<li><a href="page-error-403.html">Error 403</a></li>
-										<li><a href="page-error-404.html">Error 404</a></li>
-										<li><a href="page-error-500.html">Error 500</a></li>
-										<li><a href="page-error-503.html">Error 503</a></li>
-									</ul>
-								</li>
-								<li><a href="page-lock-screen.html">Lock Screen</a></li>
+								<li><a href="<?= base_url('admin/category') ?>">Ангилал</a></li>
+								<li><a href="<?= base_url('admin/teams') ?>">Баг</a></li>
 							</ul>
 						</li>
 					</ul>
@@ -174,19 +167,15 @@
 		<script src="<?= base_url("assets/admin/") ?>vendor/chart.js/Chart.bundle.min.js"></script>
 		<script src="<?= base_url("assets/admin/") ?>vendor/owl-carousel/owl.carousel.js"></script>
 
-		<!-- Chart piety plugin files -->
 		<script src="<?= base_url("assets/admin/") ?>vendor/peity/jquery.peity.min.js"></script>
 
-		<!-- Apex Chart -->
 		<script src="<?= base_url("assets/admin/") ?>vendor/apexchart/apexchart.js"></script>
 
-		<!-- Dashboard 1 -->
 		<script src="<?= base_url("assets/admin/") ?>js/dashboard/dashboard-1.js"></script>
 
 		<script src="<?= base_url("assets/admin/") ?>js/custom.min.js"></script>
 		<script src="<?= base_url("assets/admin/") ?>js/deznav-init.js"></script>
 		<script src="<?= base_url("assets/admin/") ?>js/demo.js"></script>
-		<!-- <script src="<?= base_url("assets/admin/") ?>js/styleSwitcher.js"></script> -->
 
 	</body>
 

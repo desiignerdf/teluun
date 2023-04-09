@@ -14,8 +14,6 @@ class Content extends Admin_Controller
 		parent::__construct();
 		$this->load->model('content_model');
 		$this->load->model('category_model');
-		$this->load->model('language_model');
-		$this->load->model('translate_model');
 
 		$config = array(
 			'upload_path' => "./uploads/",
@@ -39,18 +37,12 @@ class Content extends Admin_Controller
 				$category_id = $_GET['c'];
 			}
 
-			$is_featured = 0;
-			if (isset($_GET['f'])) {
-				$is_featured = $_GET['f'];
-			}
-
 			$q = '';
 			if (isset($_GET['q'])) {
 				$q = $_GET['q'];
 			}
 
 			$data->category_id = $category_id;
-			$data->is_featured = $is_featured;
 			$data->q = $q;
 
 			$config = array();
@@ -64,10 +56,8 @@ class Content extends Admin_Controller
 
 			$page = ($this->uri->segment($config["uri_segment"])) ? $this->uri->segment($config["uri_segment"]) : 0;
 
-			$language = $this->language_model->getDefaultLanguage();
-
 			$data->categories = $this->category_model->getItems("", 1, 1);
-			$data->items = $this->content_model->getPagedItems($config["per_page"], $page, $category_id, $is_featured, $q, 0, $language->id);
+			$data->items = $this->content_model->getPagedItems($config["per_page"], $page, $category_id, $q, 0);
 			$data->links = $this->pagination->create_links();
 
 			$data->page = $page;
@@ -92,8 +82,6 @@ class Content extends Admin_Controller
 			if ($this->form_validation->run() === false) {
 				// validation not ok, send validation errors to the view
 				$data->categories = $this->category_model->getItems("", 1, 1);
-				$data->languages = $this->language_model->getAllLanguages();
-
 
 				$data->view = 'admin/content/add';
 				$this->load->view('layouts/layout-admin', $data);
@@ -102,13 +90,8 @@ class Content extends Admin_Controller
 				$category_id = $this->input->post('category');
 				$title = $this->input->post('title');
 				$description = $this->input->post('description');
-				$video = $this->input->post('video');
 				$content = $this->input->post('content');
 				$status = $this->input->post('status');
-				$published_at = $this->input->post('published_at');
-				$is_featured = $this->input->post('is_featured');
-				$show_image = $this->input->post('show_image');
-				$display_order = $this->input->post('display_order');
 				$file_id = 0;
 
 				if ($this->upload->do_upload('fileUp')) {
@@ -117,23 +100,10 @@ class Content extends Admin_Controller
 				} else {
 					//$this->session->set_flashdata('error', $this->upload->display_errors());
 				}
-				$languages = $this->language_model->getAllLanguages();
-
-				$i = 0;
-				$content_id = 0;
-				foreach ($languages as $language) {
-					$i++;
-					$title = $this->input->post('title' . $language->id . '');
-					$description = $this->input->post('description' . $language->id . '');
-					$content = $this->input->post('content' . $language->id . '');
-
-					if ($i == 1) {
-						$content_id = $this->content_model->insert($title, $description, $content, $status, $category_id, $file_id, $is_featured, $video, $published_at, $show_image, $display_order, $language->id);
-						$this->translate_model->insert($title, $description, $content, null, $content_id, 'content', $language->id);
-					} else {
-						$this->translate_model->insert($title, $description, $content, null, $content_id, 'content', $language->id);
-					}
+				if ($this->content_model->insert($title, $description, $content, $status, $category_id, $file_id)) {
 					$this->session->set_flashdata('success', 'Мэдээ амжилттай нэмлээ.');
+				} else {
+					$this->session->set_flashdata('error', 'Мэдээ нэмэх үед алдаа гарлаа. Та дахин нэмнэ үү.');
 				}
 				redirect('admin/content');
 			}
@@ -154,14 +124,11 @@ class Content extends Admin_Controller
 			$this->form_validation->set_rules('status', 'Status', 'trim|required');
 			if ($this->form_validation->run() === false) {
 				$data->categories = $this->category_model->getItems("", 1, 1);
-				$data->languages = $this->language_model->getAllLanguages();
 				$content = $this->content_model->getItemById($id);
 
 				if ($content) {
 					$data->cid = $content->id;
 					$data->category_id = $content->category_id;
-					$data->language_id = $content->language_id;
-					$data->translates = $this->translate_model->getTranslates($content->id, 'content');
 
 					$data->file_id = $content->file_id;
 					if ($content->file_id > 0) {
@@ -170,13 +137,8 @@ class Content extends Admin_Controller
 
 					$data->title = $content->title;
 					$data->description = $content->description;
-					$data->video = $content->video;
 					$data->content = $content->content;
 					$data->status = $content->status;
-					$data->published_at = $content->published_at;
-					$data->is_featured = $content->is_featured;
-					$data->show_image = $content->show_image;
-					$data->display_order = $content->display_order;
 
 					// validation not ok, send validation errors to the view
 					$data->view = 'admin/content/edit';
@@ -191,13 +153,8 @@ class Content extends Admin_Controller
 				$category_id = $this->input->post('category');
 				$title = $this->input->post('title');
 				$description = $this->input->post('description');
-				$video = $this->input->post('video');
 				$content = $this->input->post('content');
 				$status = $this->input->post('status');
-				$published_at    = $this->input->post('published_at');
-				$is_featured    = $this->input->post('is_featured');
-				$show_image = $this->input->post('show_image');
-				$display_order = $this->input->post('display_order');
 
 				$file = $_FILES['fileUp'];
 				$file_id = $this->input->post('file_id');
@@ -214,24 +171,10 @@ class Content extends Admin_Controller
 					}
 				}
 
-				$languages = $this->language_model->getAllLanguages();
-
-				$i = 0;
-				foreach ($languages as $language) {
-					$i++;
-					$tid = $this->input->post('tid' . $language->id . '');
-					$title = $this->input->post('title' . $language->id . '');
-					$description = $this->input->post('description' . $language->id . '');
-					$content = $this->input->post('content' . $language->id . '');
-
-					if ($i == 1) {
-						$this->content_model->update($cid, $title, $description, $content, $status, $category_id, $file_id, $is_featured, $video, $published_at, $show_image, $display_order, $language->id);
-						$this->translate_model->update($title, $description, $content, null, $cid, 'content', $language->id, $tid);
-					} else {
-						$this->translate_model->update($title, $description, $content, null, $cid, 'content', $language->id, $tid);
-					}
-
-					$this->session->set_flashdata('success', 'Мэдээ амжилттай хадгаллаа');
+				if ($this->content_model->update($cid, $title, $description, $content, $status, $category_id, $file_id)) {
+					$this->session->set_flashdata('success', 'Мэдээ амжилттай заслаа.');
+				} else {
+					$this->session->set_flashdata('error', 'Мэдээ засах үед алдаа гарлаа. Та дахин засна уу.');
 				}
 				redirect('admin/content');
 			}
